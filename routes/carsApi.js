@@ -24,4 +24,19 @@ router.get('/:id', async (req, res, next) => {
     }
 })
 
+router.post('/', async (req, res, next) => {
+    const newCar = req.body;
+
+    if (!newCar.VIN || !newCar.make || !newCar.model || !newCar.mileage) {
+        res.status(400).json({ message: "Please include values at least for VIN, make, model, and mileage!"})
+    }
+
+    try {
+        const [carID] = await db("cars-specs").insert(newCar);
+
+        res.status(201).json(await db('cars-specs').where('carID', carID).first());
+    } catch(err) {
+        next(err)
+    }
+})
 module.exports = router
